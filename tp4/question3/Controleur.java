@@ -19,6 +19,9 @@ public class Controleur extends JPanel {
     private JButton push, add, sub, mul, div, clear;
     private PileModele<Integer> pile;
     private JTextField donnee;
+    private ActionListener pushlistener,addlistener,sublistener,mullistener,
+                           divlistener,clearlistener;
+              
 
     public Controleur(PileModele<Integer> pile) {
         super();
@@ -31,34 +34,142 @@ public class Controleur extends JPanel {
         this.mul = new JButton("*");
         this.div = new JButton("/");
         this.clear = new JButton("[]");
+        
+        pushlistener = new PushListener();
+        addlistener = new AddListener();
+        sublistener = new SubListener();
+        mullistener = new MulListener();
+        divlistener = new DivListener();
+        clearlistener = new ClearListener();
 
         setLayout(new GridLayout(2, 1));
         add(donnee);
-        donnee.addActionListener(null /* null est à remplacer */);
+        //donnee.addActionListener(null /* null est à remplacer */);
         JPanel boutons = new JPanel();
         boutons.setLayout(new FlowLayout());
-        boutons.add(push);  push.addActionListener(null /* null est à remplacer */);
-        boutons.add(add);   add.addActionListener(null /* null est à remplacer */);
-        boutons.add(sub);   sub.addActionListener(null /* null est à remplacer */);
-        boutons.add(mul);   mul.addActionListener(null /* null est à remplacer */);
-        boutons.add(div);   div.addActionListener(null /* null est à remplacer */);
-        boutons.add(clear); clear.addActionListener(null /* null est à remplacer */);
+        boutons.add(push);  push.addActionListener(pushlistener);
+        boutons.add(add);   add.addActionListener(addlistener);
+        boutons.add(sub);   sub.addActionListener(sublistener);
+        boutons.add(mul);   mul.addActionListener(mullistener);
+        boutons.add(div);   div.addActionListener(divlistener);
+        boutons.add(clear); clear.addActionListener(clearlistener);
         add(boutons);
         boutons.setBackground(Color.red);
         actualiserInterface();
     }
 
     public void actualiserInterface() {
-        // à compléter
+        
+        if(pile.estPleine())push.setEnabled(false);
+        else {
+            push.setEnabled(true);
+        }
+        
+        if(pile.taille()<2){
+            add.setEnabled(false);
+            sub.setEnabled(false);
+            mul.setEnabled(false);
+            div.setEnabled(false);
+        }
+        else{
+            add.setEnabled(true);
+            sub.setEnabled(true);
+            mul.setEnabled(true);
+            div.setEnabled(true);
+        }
+        if(pile.estVide())clear.setEnabled(false);
+        else{
+            clear.setEnabled(true);
+        }
     }
 
     private Integer operande() throws NumberFormatException {
         return Integer.parseInt(donnee.getText());
     }
+  
+public class PushListener implements ActionListener {
 
-    // à compléter
-    // en cas d'exception comme division par zéro, 
-    // mauvais format de nombre suite à l'appel de la méthode operande
-    // la pile reste en l'état (intacte)
+        public void actionPerformed(ActionEvent event) {
+            try{
+                pile.empiler(operande());     
+            }
+            catch(NumberFormatException e){}
+            
+            catch(PilePleineException e){}
+            actualiserInterface();
+        }
+    }
+        
+public class AddListener implements ActionListener {
 
+        public void actionPerformed(ActionEvent event) {
+            try{
+                pile.empiler(pile.depiler()+pile.depiler());
+            }
+            catch(PileVideException e){}
+            
+            catch(PilePleineException e){}
+            actualiserInterface();
+        }
+    }
+        
+public class SubListener implements ActionListener {
+
+        public void actionPerformed(ActionEvent event) {
+            try{
+                pile.empiler(pile.depiler()-pile.depiler());
+            }
+            catch(PileVideException e){}
+            
+            catch(PilePleineException e){}
+            actualiserInterface();
+        }
+    } 
+        
+public class MulListener implements ActionListener {
+
+        public void actionPerformed(ActionEvent event) {
+            try{
+                pile.empiler(pile.depiler()*pile.depiler());
+            }
+            catch(PileVideException e){}
+            
+            catch(PilePleineException e){}
+            actualiserInterface();
+        }
+    }
+        
+public class DivListener implements ActionListener {
+
+        public void actionPerformed(ActionEvent event) {
+            try{
+                int numerateur = pile.depiler();
+                int denominateur = pile.depiler();
+                if(denominateur==0){
+                    pile.empiler(denominateur);
+                    pile.empiler(numerateur);
+                }else{
+                    pile.empiler(numerateur/denominateur);
+                }
+            }
+            catch(PileVideException e){}
+            
+            catch(PilePleineException e){}
+            actualiserInterface();
+        }
+    }
+        
+public class ClearListener implements ActionListener {
+
+        public void actionPerformed(ActionEvent event) {
+            try{
+                for(int i=0;i<pile.taille();i++){
+                    pile.depiler();
+                }
+            }
+            catch(PileVideException e){}
+            actualiserInterface();
+        }
+    }
 }
+        

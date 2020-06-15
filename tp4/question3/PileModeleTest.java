@@ -41,7 +41,7 @@ public class PileModeleTest extends junit.framework.TestCase {
 	 * 
 	 * Méthode appelée avant chaque appel de méthode de test.
 	 */
-	protected void setUp() // throws java.lang.Exception
+	protected void setUp()  throws java.lang.Exception
 	{
 		// Initialisez ici vos engagements
 
